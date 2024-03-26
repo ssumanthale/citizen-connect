@@ -1,5 +1,5 @@
 import { Feather, MaterialIcons, Octicons } from "@expo/vector-icons";
-import { Tabs } from "expo-router";
+import { Tabs, router } from "expo-router";
 import Colors from "../../constants/Colors";
 
 export default function TabsLayout() {
@@ -15,6 +15,7 @@ export default function TabsLayout() {
         },
         headerShadowVisible: false,
         tabBarLabel: () => null,
+        tabBarHideOnKeyboard: true,
       }}
     >
       <Tabs.Screen
@@ -23,12 +24,15 @@ export default function TabsLayout() {
           headerTitle: "CitizenConnect",
           title: "CitizenConnect",
           headerTitleAlign: "center",
+          // hide title
+          // headerShown: false,
           headerTitleStyle: {
             fontFamily: "Poppins-Bold",
           },
           tabBarIcon: ({ size, color }) => (
             <Feather name="home" size={size} color={color} />
           ),
+          // create a custom header component
         }}
       />
       <Tabs.Screen
@@ -103,21 +107,8 @@ export default function TabsLayout() {
                 color={Colors.primary}
                 style={{ marginLeft: 10 }}
                 onPress={() => {
-                  console.log("Edit");
-                }}
-              />
-            );
-          },
-
-          headerRight: () => {
-            return (
-              <MaterialIcons
-                name="logout"
-                size={24}
-                color={Colors.primary}
-                style={{ marginRight: 10 }}
-                onPress={() => {
-                  console.log("Logout");
+                  //route to proflie edit page
+                  router.push("/profile");
                 }}
               />
             );

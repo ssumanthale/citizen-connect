@@ -1,4 +1,4 @@
-import { View, Pressable } from "react-native";
+import { View, Pressable, Alert } from "react-native";
 import React, { useContext, useState } from "react";
 import AddStory from "../../components/AddStory";
 import { AuthContext } from "../../context/authcontext";
@@ -10,17 +10,43 @@ import {
 } from "react-native-responsive-screen";
 import { blurhash } from "../../constants";
 import { useRouter } from "expo-router";
+import { addStory } from "../../constants/api";
+import Loading from "../../components/Loading";
 const Add = () => {
   const { user } = useContext(AuthContext);
-  // const [image, setImage] = useState(
-  //   "https://firebasestorage.googleapis.com/v0/b/citizen-connect-edfd5.appspot.com/o/images%2FJHQLtteCivTs3JyyaeipgDW6ZzF3?alt=media&token=a3d0ca17-2645-4d16-a8d0-4a08c8dd1646"
-  // );
   const [image, setImage] = useState("");
-
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
-
+  console.log("image", image);
   const upateProfile = (url) => {
     setImage(url);
+  };
+
+  const handleStory = async () => {
+    setLoading(true);
+    const { success, msg } = await addStory(
+      {
+        image,
+        userId: user.id,
+        userName: user.name,
+        profileUrl: user.profileUrl,
+        date: Date.now(),
+      },
+      user.id
+    );
+    if (success) {
+      Alert.alert("Success", "Story Created successfully", [
+        {
+          text: "OK",
+          onPress: () => {
+            router.navigate("/home");
+          },
+        },
+      ]);
+    } else {
+      Alert.alert("Error", msg);
+    }
+    setLoading(false);
   };
   return (
     <View className="flex-1 justify-center items-center">
@@ -36,46 +62,55 @@ const Add = () => {
             placeholder={blurhash}
             transition={500}
           />
-          <View className="flex-row  justify-center">
-            <Pressable
-              className="bg-black rounded-md w-2/4"
-              onPress={() => {
-                setImage("");
-              }}
-              style={{
-                marginTop: 20,
-              }}
-            >
-              <RNText
-                style={{ fontSize: hp(2) }}
-                className="text-white font-bold tracking-wide text-center p-2 rounded-md"
-                font={"Poppins-Bold"}
+          <>
+            {loading ? (
+              <Loading size={hp(8.5)} />
+            ) : (
+              <View
+                className="flex-row  justify-center"
+                style={{
+                  paddingHorizontal: 20,
+                }}
               >
-                Retake
-              </RNText>
-            </Pressable>
-            <Pressable
-              className="bg-blue-500 rounded-md w-2/4 ml-2"
-              onPress={() => {
-                router.navigate("/home");
-              }}
-              style={{
-                marginTop: 20,
-                marginLeft: 10,
-              }}
-            >
-              <RNText
-                style={{ fontSize: hp(2) }}
-                className="text-white font-bold tracking-wide text-center p-2 rounded-md"
-                font={"Poppins-Bold"}
-              >
-                Add to Story
-              </RNText>
-            </Pressable>
-          </View>
+                <Pressable
+                  className="bg-black rounded-md w-2/4"
+                  onPress={() => {
+                    setImage("");
+                  }}
+                  style={{
+                    marginTop: 20,
+                  }}
+                >
+                  <RNText
+                    style={{ fontSize: hp(2) }}
+                    className="text-white font-bold tracking-wide text-center p-2 rounded-md"
+                    font={"Poppins-Bold"}
+                  >
+                    Retake
+                  </RNText>
+                </Pressable>
+                <Pressable
+                  className="bg-blue-500 rounded-md w-2/4 ml-2"
+                  onPress={handleStory}
+                  style={{
+                    marginTop: 20,
+                    marginLeft: 10,
+                  }}
+                >
+                  <RNText
+                    style={{ fontSize: hp(2) }}
+                    className="text-white font-bold tracking-wide text-center p-2 rounded-md"
+                    font={"Poppins-Bold"}
+                  >
+                    Add to Story
+                  </RNText>
+                </Pressable>
+              </View>
+            )}
+          </>
         </>
       ) : (
-        <View className="flex-1">
+        <View className="flex-1 justify-center items-center">
           <AddStory id={user.id} upateProfile={upateProfile} />
         </View>
       )}

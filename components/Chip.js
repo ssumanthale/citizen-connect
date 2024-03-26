@@ -81,34 +81,44 @@ const Chip = ({ stage }) => {
   let chipColor;
   switch (stage) {
     case NEW_CASE:
-      chipColor = "#FF9800";
-      break;
-    case CONFIRMED:
-      chipColor = "#4CAF50";
-      break;
-    case COMPLETED:
+      //pnik flavor color
       chipColor = "#2196F3";
       break;
+    case CONFIRMED:
+      chipColor = "#FF9800";
+      break;
+    case COMPLETED:
+      chipColor = "#4aaf57";
+      break;
     case REJECTED:
-      chipColor = "#F44336";
+      chipColor = "#FF2E63";
       break;
     case WORK_IN_PROGRESS:
-      chipColor = "#9C27B0";
+      chipColor = "#8E3fff";
       break;
     default:
       chipColor = "#9E9E9E";
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: chipColor }]}>
-      <RNText style={styles.text}>{stage}</RNText>
+    <View
+      style={[
+        styles.container,
+        {
+          backgroundColor: chipColor,
+        },
+      ]}
+    >
+      <RNText className="text-sm" style={styles.text}>
+        {stage}
+      </RNText>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    borderRadius: 20,
+    borderRadius: 4,
     paddingVertical: 5,
     paddingHorizontal: 10,
     marginRight: 5,
@@ -117,14 +127,15 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     textAlign: "center",
     fontFamily: "Poppins-Bold",
+    letterSpacing: 0.5,
   },
 });
 
 export default Chip;
 
 //create constants for the stages
-export const NEW_CASE = "New Case";
+export const NEW_CASE = "New case";
 export const CONFIRMED = "Confirmed";
 export const COMPLETED = "Completed";
 export const REJECTED = "Rejected";
-export const WORK_IN_PROGRESS = "Work In Progress";
+export const WORK_IN_PROGRESS = "Work in progress";

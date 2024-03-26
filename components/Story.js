@@ -1,4 +1,4 @@
-import { View, Text } from "react-native";
+import { View, Text, TouchableOpacity } from "react-native";
 import React from "react";
 import {
   widthPercentageToDP as wp,
@@ -7,19 +7,28 @@ import {
 import RNText from "./RNText";
 import { Image } from "expo-image";
 import { blurhash } from "../constants";
+import { router } from "expo-router";
 const Story = ({ item }) => {
   return (
-    <View
+    <TouchableOpacity
       style={{
-        width: wp("17%"),
-        height: wp("17%"),
-        borderRadius: wp("17%") / 2,
+        width: wp("16%"),
+        height: wp("16%"),
+        borderRadius: wp("16%") / 2,
         justifyContent: "center",
         alignItems: "center",
         //add black border
         borderWidth: 2,
         borderColor: "#ff8501",
         marginRight: wp("2%"),
+      }}
+      onPress={() => {
+        router.push({
+          pathname: "story",
+          params: {
+            ...item,
+          },
+        });
       }}
     >
       <Image
@@ -29,11 +38,11 @@ const Story = ({ item }) => {
           borderRadius: 50,
           backgroundColor: "#0553",
         }}
-        source={item.image}
+        source={item.profileUrl}
         placeholder={blurhash}
         transition={200}
       />
-    </View>
+    </TouchableOpacity>
   );
 };
 

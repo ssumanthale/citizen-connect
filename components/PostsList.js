@@ -1,27 +1,51 @@
 import { Image } from "expo-image";
 import React from "react";
-import { StyleSheet, View, FlatList, Pressable } from "react-native";
+import { View, FlatList, TouchableOpacity } from "react-native";
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
 import { blurhash } from "../constants";
 import { router } from "expo-router";
-import { EvilIcons, Ionicons } from "@expo/vector-icons";
 import dayjs from "dayjs";
 import RNText from "./RNText";
-import Chip, { WORK_IN_PROGRESS } from "./Chip";
-import TimelineComponent from "./Chip";
-import Timeline from "./Chip";
+import Chip from "./Chip";
 var relativeTime = require("dayjs/plugin/relativeTime");
 
 dayjs.extend(relativeTime);
 
 const Item = ({ item }) => {
-  const { name, content, date, image, profileImage, stage } = item;
+  const {
+    content,
+    date,
+    image,
+    profileUrl,
+    stage,
+    title,
+    department,
+    location,
+    userId,
+    userName,
+  } = item;
   return (
-    <View
-      className="p-2"
+    <TouchableOpacity
+      onPress={() => {
+        router.push({
+          pathname: "post",
+          params: {
+            content,
+            date,
+            image,
+            profileUrl,
+            stage,
+            title,
+            department,
+            location,
+            userId,
+            userName,
+          },
+        });
+      }}
       style={{
         shadowColor: "#000",
         shadowOffset: {
@@ -34,6 +58,7 @@ const Item = ({ item }) => {
         backgroundColor: "#fff",
         borderRadius: 10,
         marginBottom: 10,
+        padding: 10,
       }}
     >
       <View
@@ -51,7 +76,7 @@ const Item = ({ item }) => {
             borderRadius: 50,
             backgroundColor: "#0553",
           }}
-          source={profileImage}
+          source={profileUrl}
           placeholder={blurhash}
           transition={200}
         />
@@ -64,7 +89,7 @@ const Item = ({ item }) => {
           <View>
             <View className="flex-row items-center">
               <RNText className="" font={"Poppins-Bold"}>
-                {name}{" "}
+                {userName}{" "}
               </RNText>
               <RNText
                 className="text-xs"
@@ -90,7 +115,7 @@ const Item = ({ item }) => {
                 fontSize: 12,
               }}
             >
-              Location
+              {location}
             </RNText>
           </View>
         </View>
@@ -101,12 +126,14 @@ const Item = ({ item }) => {
           style={{
             fontFamily: "Poppins-SemiBold",
           }}
+          //3 lines
+          numberOfLines={2}
         >
-          {content}
+          {title}
         </RNText>
         <Image
           style={{
-            height: hp(30),
+            height: hp(28),
             maxWidth: wp(100),
             borderRadius: 4,
             backgroundColor: "#0553",
@@ -122,29 +149,19 @@ const Item = ({ item }) => {
             right: 5,
           }}
         >
-          {/* <Chip stage={WORK_IN_PROGRESS} /> */}
+          <Chip stage={stage} />
         </View>
-        <Timeline stage={stage} />
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 
-// the filter
 const PostList = (props) => {
   return (
-    <View
-      className="p-2 "
-      style={{
-        paddingBottom: hp(22),
-      }}
-    >
-      <FlatList
-        showsVerticalScrollIndicator={false}
-        data={props.data}
-        renderItem={({ item, index }) => <Item item={item} />}
-        keyExtractor={(item) => item.id}
-      />
+    <View className="p-2">
+      {props.data.map((item) => (
+        <Item key={item.id} item={item} />
+      ))}
     </View>
   );
 };

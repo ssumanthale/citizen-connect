@@ -5,9 +5,22 @@ export default AppLayout = () => {
   return (
     <Stack>
       <Stack.Screen
-        name="profile"
+        name="post"
         options={{
           headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="story"
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="profile"
+        options={{
+          headerTitle: "Edit Profile",
+          headerTitleAlign: "center",
         }}
       />
     </Stack>

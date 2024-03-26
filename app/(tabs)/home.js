@@ -1,4 +1,4 @@
-import { View, Pressable, FlatList } from "react-native";
+import { View, Pressable, FlatList, Platform, ScrollView } from "react-native";
 import React, { useContext } from "react";
 import { AuthContext } from "../../context/authcontext";
 import { Link } from "expo-router";
@@ -9,7 +9,8 @@ import {
 } from "react-native-responsive-screen";
 import Story from "../../components/Story";
 import PostList from "../../components/PostsList";
-import { posts } from "../../constants";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+// import { posts } from "../../constants";
 
 // create some fake user stories with images and names
 const markers = [
@@ -38,29 +39,58 @@ const markers = [
     name: "Jane Doe",
     image: "https://randomuser.me/api/portraits/men/5.jpg",
   },
+  {
+    id: "6",
+    name: "Jane Doe",
+    image: "https://randomuser.me/api/portraits/men/5.jpg",
+  },
+  {
+    id: "7",
+    name: "Jane Doe",
+    image: "https://randomuser.me/api/portraits/men/5.jpg",
+  },
+  {
+    id: "8",
+    name: "Jane Doe",
+    image: "https://randomuser.me/api/portraits/men/5.jpg",
+  },
 ];
+const ios = Platform.OS === "ios";
 
 const Home = () => {
-  // const { logout, user } = useContext(AuthContext);
+  const { top } = useSafeAreaInsets();
+
+  const { posts, last24H } = useContext(AuthContext);
   return (
-    <View className="">
-      <View
-        className="p-2 justify-center pr-1"
-        style={{
-          height: hp("11%"),
-        }}
-      >
-        <FlatList
-          data={markers}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          renderItem={({ item, index }) => <Story item={item} />}
-          keyExtractor={(item) => item.id}
-        />
-      </View>
+    <ScrollView
+      style={
+        {
+          // paddingTop: ios ? top : top + 10,
+        }
+      }
+      className=""
+    >
+      {last24H.length > 0 && (
+        <View
+          className="justify-center"
+          style={{
+            paddingHorizontal: 10,
+            paddingVertical: 8,
+            paddingBottom: 2,
+          }}
+        >
+          <FlatList
+            data={last24H}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            renderItem={({ item, index }) => <Story item={item} />}
+            keyExtractor={(item) => item.date}
+          />
+        </View>
+      )}
 
       <PostList data={posts} />
-    </View>
+    </ScrollView>
   );
 };
 export default Home;

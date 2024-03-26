@@ -7,19 +7,28 @@ import {
   signInWithEmailAndPassword,
   signOut,
 } from "firebase/auth";
-import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDoc,
+  onSnapshot,
+  setDoc,
+  updateDoc,
+} from "firebase/firestore";
 
-// Create the AuthContext
 export const AuthContext = createContext();
 
-// Create the AuthProvider component
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(undefined);
 
   const [loading, setLoading] = useState(true);
 
-  // Listen for user authentication changes
+  const [posts, setPosts] = useState([]);
+  const [stories, setStories] = useState([]);
+  const [notifications, setNotifications] = useState([]);
+  const [last24H, setLast24H] = useState([]);
+
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -39,6 +48,82 @@ export const AuthProvider = ({ children }) => {
       unsub();
     };
   }, []);
+
+  useEffect(() => {
+    if (!user) return;
+
+    const querySnapshot = collection(db, "story");
+
+    const unsub = onSnapshot(querySnapshot, (snapshot) => {
+      const story = [];
+      const last24H = [];
+      snapshot.forEach((doc) => {
+        if (doc.data().date > Date.now() - 86400000) {
+          last24H.push({
+            ...doc.data(),
+            id: doc.id,
+            profileUrl:
+              doc.data().userId === user?.id
+                ? user?.profileUrl
+                : doc.data().profileUrl,
+          });
+        }
+        story.push({
+          ...doc.data(),
+          id: doc.id,
+          profileUrl:
+            doc.data().userId === user?.id
+              ? user?.profileUrl
+              : doc.data().profileUrl,
+        });
+      });
+      setStories(story);
+      setLast24H(last24H);
+    });
+    return () => {
+      unsub();
+    };
+  }, [user]);
+  useEffect(() => {
+    if (!user) return;
+
+    const querySnapshot = collection(db, "posts");
+
+    const unsub = onSnapshot(querySnapshot, (snapshot) => {
+      const posts = [];
+      snapshot.forEach((doc) => {
+        posts.push({
+          ...doc.data(),
+          id: doc.id,
+          profileUrl:
+            doc.data().userId === user?.id
+              ? user?.profileUrl
+              : doc.data().profileUrl,
+        });
+      });
+      setPosts(posts);
+    });
+    return () => {
+      unsub();
+    };
+  }, [user]);
+
+  useEffect(() => {
+    if (!user) return;
+
+    const querySnapshot = collection(db, "users", user.id, "notifications");
+
+    const unsub = onSnapshot(querySnapshot, (snapshot) => {
+      const notification = [];
+      snapshot.forEach((doc) => {
+        notification.push({ ...doc.data(), id: doc.id });
+      });
+      setNotifications(notification);
+    });
+    return () => {
+      unsub();
+    };
+  }, [user]);
 
   // Sign up a new user
   const register = async (email, password, name) => {
@@ -119,6 +204,11 @@ export const AuthProvider = ({ children }) => {
     login,
     logout,
     resetPassword,
+    posts,
+    stories,
+    notifications,
+    last24H,
+    setUser,
   };
 
   return (
