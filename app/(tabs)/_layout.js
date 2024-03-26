@@ -88,8 +88,8 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="profile"
         options={{
-          headerTitle: "My Proflie",
-          title: "Proflie",
+          headerTitle: "My Profile",
+          title: "My Profile",
           headerTitleAlign: "center",
           headerTitleStyle: {
             fontFamily: "Poppins-Bold",
